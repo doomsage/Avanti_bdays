@@ -14,7 +14,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Teri Public VAPID Key
 const PUBLIC_VAPID_KEY = "BJv7JeCkFJL6evAswfndWfeHqLOk4UJAOZsIFUMrDMipaPngmYJRMIBLkTAfot4tNMQvVpFqNPO5dqwSVXafKsw";
 
 // Student Data
@@ -31,12 +30,10 @@ document.getElementById('search').addEventListener('input', (e) => {
   document.getElementById('results').innerHTML = filtered.map(s => `<p>${s.name} - ${s.dob}</p>`).join('');
 });
 
-// VAPID Key Converter Function (Error 2 Fix)
+// VAPID Key Converter
 function urlB64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding)
-    .replace(/\-/g, '+')
-    .replace(/_/g, '/');
+  const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
   const rawData = window.atob(base64);
   const outputArray = new Uint8Array(rawData.length);
   for (let i = 0; i < rawData.length; ++i) {
@@ -45,41 +42,33 @@ function urlB64ToUint8Array(base64String) {
   return outputArray;
 }
 
-// Push Notification Subscription Logic (Error 1 Fix)
+// Push Notification Subscription Logic
 document.getElementById('enable-notifications').addEventListener('click', async () => {
   if ('serviceWorker' in navigator && 'PushManager' in window) {
     try {
-      // Notification permission popup
       const permission = await Notification.requestPermission();
       if (permission !== 'granted') {
-        alert("Bhai permission Deny kar di toh notification kaise aayega? Browser settings me jaake site data clear kar aur wapas allow kar.");
+        alert("Bhai permission Deny kar di. Browser settings me jaake allow kar.");
         return;
       }
 
-      // Service Worker register
       await navigator.serviceWorker.register('/sw.js');
-      
-      // Wait for Service Worker to be fully active
       const registration = await navigator.serviceWorker.ready;
-
-      // Check existing subscription
       let subscription = await registration.pushManager.getSubscription();
       
       if (!subscription) {
-        // Naya subscription generate kar
         const applicationServerKey = urlB64ToUint8Array(PUBLIC_VAPID_KEY);
         subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: applicationServerKey
         });
 
-        // Firebase me save kar
         await addDoc(collection(db, "subscriptions"), {
           subInfo: JSON.stringify(subscription),
           timestamp: new Date()
         });
         
-        alert("Success! Notifications ON aur Firebase me save ho gaya.");
+        alert("Success! Notifications ON.");
       } else {
         alert("Tu already subscribed hai bhai!");
       }
@@ -92,4 +81,33 @@ document.getElementById('enable-notifications').addEventListener('click', async 
     alert("Push notifications is browser me support nahi karte.");
   }
 });
-            
+
+// --- PWA INSTALLATION LOGIC ---
+let deferredPrompt;
+const installBtn = document.getElementById('install-btn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  // Browser ka default bottom bar prompt rok do
+  e.preventDefault();
+  deferredPrompt = e;
+  // Apna button dikhao
+  if(installBtn) {
+    installBtn.style.display = 'block';
+  }
+});
+
+if(installBtn) {
+  installBtn.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      // Asli install popup trigger karo
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      
+      if (outcome === 'accepted') {
+        console.log('App Installed!');
+        installBtn.style.display = 'none'; 
+      }
+      deferredPrompt = null;
+    }
+  });
+}
