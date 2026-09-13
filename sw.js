@@ -14,7 +14,7 @@ self.addEventListener('push', event => {
 
   const options = {
     body: data.body,
-    icon: 'https://i.ibb.co/kYNMLY7/doomsage.png', // Baad me isko apni real image se replace karna
+    icon: 'https://i.ibb.co/mCcQcWmB/doomsage.png', // Baad me isko apni real image se replace karna
     vibrate: [200, 100, 200]
   };
 
