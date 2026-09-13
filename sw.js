@@ -1,25 +1,21 @@
-// Ye Chrome ko batayega ki app offline chal sakta hai (PWA Requirement)
+// Dummy offline fallback to strictly satisfy Chrome PWA rules
 self.addEventListener('fetch', event => {
-  // Abhi offline data cache nahi kar rahe, toh isko bas aise hi chhod do.
-  // Chrome ko bas ye event listener chahiye hota hai app installable manne ke liye.
+  event.respondWith(
+    fetch(event.request).catch(() => {
+      return new Response('Avanti Bdays is offline. Connect to internet to see updates.');
+    })
+  );
 });
 
-// Push Notification handle karne ka logic
 self.addEventListener('push', event => {
   let data = { title: "Notification", body: "New Update!" };
-  
   if (event.data) {
     data = event.data.json();
   }
-
   const options = {
     body: data.body,
-    icon: 'https://i.ibb.co/mCcQcWmB/doomsage.png', // Baad me isko apni real image se replace karna
+    icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Google_Chrome_icon_%28September_2014%29.svg/192px-Google_Chrome_icon_%28September_2014%29.svg.png',
     vibrate: [200, 100, 200]
   };
-
-  // waitUntil ensure karta hai ki notification dikhne se pehle OS is process ko na maare
-  event.waitUntil(
-    self.registration.showNotification(data.title, options)
-  );
+  event.waitUntil(self.registration.showNotification(data.title, options));
 });
