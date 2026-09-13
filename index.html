@@ -22,6 +22,33 @@
 </head>
 <body>
   <h2>Avanti Batch Birthdays</h2>
+    <!-- PWA DEBUGGER BOX -->
+  <div id="debug-box" style="margin: 10px 0; padding: 10px; background: #333; color: #ffeb3b; border: 1px dashed red; font-size: 14px;">
+    <b>PWA Diagnostic:</b><br>
+    <span id="log-sw">SW Status: Checking...</span><br>
+    <span id="log-event">Install Event: Waiting...</span>
+  </div>
+
+  <script>
+    // 1. Check if Service Worker is actually alive
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        if(regs.length > 0) {
+          document.getElementById('log-sw').innerHTML = "SW Status: Active & Ready ✅";
+        } else {
+          document.getElementById('log-sw').innerHTML = "SW Status: Missing/Dead ❌";
+        }
+      });
+    } else {
+      document.getElementById('log-sw').innerHTML = "SW Status: Browser Not Supported ❌";
+    }
+
+    // 2. Track the exact moment Chrome decides to fire the event
+    window.addEventListener('beforeinstallprompt', (e) => {
+      document.getElementById('log-event').innerHTML = "Install Event: FIRED! ✅";
+    });
+  </script>
+  
   <button id="enable-notifications">Enable Daily Notifications</button>
   <button id="install-btn" style="display: none; background: #00ffcc; color: #000; font-weight: bold;">Install App in Phone</button>
   
