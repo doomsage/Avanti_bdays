@@ -7,12 +7,12 @@
   "theme_color": "#121212",
   "icons": [
     {
-      "src": "https://i.ibb.co/mCcQcWmB/doomsage.png",
+      "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Google_Chrome_icon_%28September_2014%29.svg/192px-Google_Chrome_icon_%28September_2014%29.svg.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "https://i.ibb.co/kYNMLY7/doomsage.png",
+      "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Google_Chrome_icon_%28September_2014%29.svg/512px-Google_Chrome_icon_%28September_2014%29.svg.png",
       "sizes": "512x512",
       "type": "image/png"
     }
