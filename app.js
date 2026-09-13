@@ -111,3 +111,38 @@ if(installBtn) {
     }
   });
 }
+// --- 1. AUTOMATIC SERVICE WORKER REGISTRATION (CRITICAL FOR INSTALL BUTTON) ---
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('SW Registered on load!'))
+      .catch(err => console.error('SW failed to register', err));
+  });
+}
+
+// --- 2. PWA INSTALLATION LOGIC ---
+let deferredPrompt;
+const installBtn = document.getElementById('install-btn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  console.log("Install prompt triggered by Chrome!"); // Ye console me check karna
+  e.preventDefault();
+  deferredPrompt = e;
+  if(installBtn) {
+    installBtn.style.display = 'block';
+  }
+});
+
+if(installBtn) {
+  installBtn.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        console.log('App Installed!');
+        installBtn.style.display = 'none'; 
+      }
+      deferredPrompt = null;
+    }
+  });
+}
