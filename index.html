@@ -9,16 +9,40 @@
     body { background-color: #121212; color: #00ffcc; font-family: monospace; padding: 20px; }
     input, button { padding: 10px; margin: 10px 0; background: #222; color: #fff; border: 1px solid #00ffcc; width: 100%; box-sizing: border-box;}
   </style>
+  <script>
+    // Ye code instantly event pakdega, bina app.js ka wait kiye
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const installBtn = document.getElementById('install-btn');
+      if (installBtn) installBtn.style.display = 'block';
+    });
+  </script>
 </head>
 <body>
   <h2>Avanti Batch Birthdays</h2>
-  <button id="enable-notifications">Enable Notifications</button>
+  <button id="enable-notifications">Enable Daily Notifications</button>
   <button id="install-btn" style="display: none; background: #00ffcc; color: #000; font-weight: bold;">Install App in Phone</button>
   
   <br><br>
   <input type="text" id="search" placeholder="Search name (e.g. Lokesh)">
   <div id="results"></div>
 
+  <script>
+    // Install button click logic
+    document.getElementById('install-btn').addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          document.getElementById('install-btn').style.display = 'none'; 
+        }
+        deferredPrompt = null;
+      }
+    });
+  </script>
+  
   <script type="module" src="/app.js"></script>
 </body>
 </html>
