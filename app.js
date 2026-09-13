@@ -1,15 +1,14 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// Teri exact Firebase config
+// Teri Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyA2qI0oQCfLHEEGqC0OZ3bvdk2SfaiqQo4",
   authDomain: "avanti-bdays.firebaseapp.com",
   projectId: "avanti-bdays",
   storageBucket: "avanti-bdays.firebasestorage.app",
   messagingSenderId: "408757362091",
-  appId: "1:408757362091:web:b8178ae8bcc420144dc6ee",
-  measurementId: "G-WW1ZNNGBMH"
+  appId: "1:408757362091:web:b8178ae8bcc420144dc6ee"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -18,11 +17,11 @@ const db = getFirestore(app);
 // Teri Public VAPID Key
 const PUBLIC_VAPID_KEY = "BJv7JeCkFJL6evAswfndWfeHqLOk4UJAOZsIFUMrDMipaPngmYJRMIBLkTAfot4tNMQvVpFqNPO5dqwSVXafKsw";
 
-// Abhi ke liye ye 3 naam hain, test karne ke baad isme baaki bacchon ka data add kar lena
+// Student Data
 const students = [
   { name: "Kuber", dob: "12-05" },
   { name: "Nitesh", dob: "08-10" },
-  { name: "Abhinash", dob: "14-09" } // Aaj 14 Sept hai, test karega toh iska notification trigger hona chahiye
+  { name: "Abhinash", dob: "14-09" } 
 ];
 
 // Search Logic
@@ -32,28 +31,65 @@ document.getElementById('search').addEventListener('input', (e) => {
   document.getElementById('results').innerHTML = filtered.map(s => `<p>${s.name} - ${s.dob}</p>`).join('');
 });
 
-// Register SW & Save Subscription to Firestore
+// VAPID Key Converter Function (Error 2 Fix)
+function urlB64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/\-/g, '+')
+    .replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
+// Push Notification Subscription Logic (Error 1 Fix)
 document.getElementById('enable-notifications').addEventListener('click', async () => {
   if ('serviceWorker' in navigator && 'PushManager' in window) {
     try {
-      const register = await navigator.serviceWorker.register('/sw.js');
-      const subscription = await register.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: PUBLIC_VAPID_KEY
-      });
+      // Notification permission popup
+      const permission = await Notification.requestPermission();
+      if (permission !== 'granted') {
+        alert("Bhai permission Deny kar di toh notification kaise aayega? Browser settings me jaake site data clear kar aur wapas allow kar.");
+        return;
+      }
 
-      // Firebase Firestore me save kar rahe hain
-      await addDoc(collection(db, "subscriptions"), {
-        subInfo: JSON.stringify(subscription),
-        timestamp: new Date()
-      });
+      // Service Worker register
+      await navigator.serviceWorker.register('/sw.js');
       
-      alert("Notifications ON! Firebase me data save ho gaya.");
+      // Wait for Service Worker to be fully active
+      const registration = await navigator.serviceWorker.ready;
+
+      // Check existing subscription
+      let subscription = await registration.pushManager.getSubscription();
+      
+      if (!subscription) {
+        // Naya subscription generate kar
+        const applicationServerKey = urlB64ToUint8Array(PUBLIC_VAPID_KEY);
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: applicationServerKey
+        });
+
+        // Firebase me save kar
+        await addDoc(collection(db, "subscriptions"), {
+          subInfo: JSON.stringify(subscription),
+          timestamp: new Date()
+        });
+        
+        alert("Success! Notifications ON aur Firebase me save ho gaya.");
+      } else {
+        alert("Tu already subscribed hai bhai!");
+      }
+
     } catch (err) {
       console.error(err);
-      alert("Error: " + err.message);
+      alert("Error aa gaya: " + err.message);
     }
   } else {
     alert("Push notifications is browser me support nahi karte.");
   }
 });
+            
