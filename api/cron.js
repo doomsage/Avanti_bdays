@@ -15,9 +15,44 @@ webpush.setVapidDetails(
 );
 
 const students = [
-  { name: "Kuber", dob: "12-05" },
-  { name: "Nitesh", dob: "08-10" },
-  { name: "Abhinash", dob: "14-09" } 
+  { name: "Abhinash Behera", dob: "16-10" },
+  { name: "Aditya Dwivedi", dob: "02-12" },
+  { name: "Gaurav Patel", dob: "07-11" },
+  { name: "Hitesh Kumar Nayak", dob: "04-07" },
+  { name: "Homnath Yogi", dob: "14-04" },
+  { name: "Kartik Malik", dob: "03-06" },
+  { name: "Piyush Nayak", dob: "22-12" },
+  { name: "Sekhar Rout", dob: "25-10" },
+  { name: "Subhankar Mallick", dob: "08-10" },
+  { name: "Lokesh Kumar Uike", dob: "23-08" },
+  { name: "Sudiptashree Biswal", dob: "03-09" },
+  { name: "Adarsha Ranjan Meher", dob: "25-12" },
+  { name: "Ajitesh Sahoo", dob: "22-09" },
+  { name: "Bishnu Priya Parida", dob: "02-04" },
+  { name: "Biswa Ranjan Sethi", dob: "10-07" },
+  { name: "Deeksha Markam", dob: "03-10" },
+  { name: "Dhuma Charan Majhi", dob: "16-03" },
+  { name: "Haunri Naik", dob: "03-07" },
+  { name: "Hitesh Kumar Meher", dob: "02-07" },
+  { name: "Kuber Lahare", dob: "31-12" },
+  { name: "Kunal Dewangan", dob: "30-06" },
+  { name: "Mohan Kumar Behera", dob: "11-11" },
+  { name: "Nishant Kumar", dob: "08-06" },
+  { name: "Om Prakash Sahoo", dob: "13-01" },
+  { name: "Prabhat Ranjan Rout", dob: "16-06" },
+  { name: "Riya Gupta", dob: "29-09" },
+  { name: "Sai Vinayak", dob: "20-03" },
+  { name: "Somesh Ranjan Samantaray", dob: "03-08" },
+  { name: "Subhradeepa Samal", dob: "14-09" },
+  { name: "Upasana Sahu", dob: "01-12" },
+  { name: "Yugant Chandra Shekhar Sakhare", dob: "15-04" },
+  { name: "Arman Dhal", dob: "02-11" },
+  { name: "Ranik Kumar Mahanta", dob: "13-10" },
+  { name: "Ashvini Yadav", dob: "11-10" },
+  { name: "Ishu Maitry", dob: "17-04" },
+  { name: "Janmejaya Sahoo", dob: "09-02" },
+  { name: "Jashobanta Behera", dob: "14-05" },
+  { name: "Samarendra Mishra", dob: "26-11" }
 ];
 
 export default async function handler(req, res) {
