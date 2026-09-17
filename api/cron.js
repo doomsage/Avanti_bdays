@@ -49,7 +49,7 @@ const students = [
   { name: "Arman Dhal", dob: "02-11" },
   { name: "Ranik Kumar Mahanta", dob: "13-10" },
   { name: "Ashvini Yadav", dob: "11-10" },
-  { name: "trial only", dob: "18-09" },
+  { name: "trial only", dob: "19-09" },
   { name: "Ishu Maitry", dob: "17-04" },
   { name: "Janmejaya Sahoo", dob: "09-02" },
   { name: "Jashobanta Behera", dob: "14-05" },
