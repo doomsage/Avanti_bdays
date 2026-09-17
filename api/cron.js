@@ -57,62 +57,20 @@ const students = [
 ];
 
 export default async function handler(req, res) {
-  // 1. Current UTC time ko IST me convert kar (+5.5 hours)
   let dateIST = new Date(new Date().getTime() + (5.5 * 60 * 60 * 1000));
-  
-  // 2. Usme 1 din add kar (kyunki 11:45 PM ho raha hai, toh kal ka check karna hai)
   dateIST.setDate(dateIST.getDate() + 1);
-
-  // 3. DD-MM format bana
   const dateStr = String(dateIST.getDate()).padStart(2, '0') + '-' + String(dateIST.getMonth() + 1).padStart(2, '0');
   
   const bdayBoys = students.filter(s => s.dob === dateStr);
 
-  // 4. Agar kal kisi ka bday nahi hai, toh chup chap band kar (Tere phone pe koi MSG nahi aayega)
   if (bdayBoys.length === 0) {
     return res.status(200).json({ message: 'No birthdays tomorrow, exiting silently.' });
   }
 
-  // 5. Agar bday hai, toh ye wala MSG tere phone pe jayega
   const names = bdayBoys.map(s => s.name).join(' aur ');
   const payload = JSON.stringify({ 
     title: 'Birthday Alert! ⏰', 
     body: `Bhai 15 min me ${names} ka birthday lagne wala hai! 12 bajte hi fatak se wish maar dena.` 
-  });
-
-  try {
-    const snapshot = await db.collection('subscriptions').get();
-    if (snapshot.empty) return res.status(200).json({ message: 'No subscribers found.' });
-
-    const sendPromises = [];
-    snapshot.forEach(doc => {
-      const subData = JSON.parse(doc.data().subInfo);
-      sendPromises.push(webpush.sendNotification(subData, payload).catch(() => {}));
-    });
-
-    await Promise.all(sendPromises);
-    res.status(200).json({ success: true, message: `Push sent for ${names}` });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-}
-
-];
-
-export default async function handler(req, res) {
-  const today = new Date();
-  const dateStr = String(today.getDate()).padStart(2, '0') + '-' + String(today.getMonth() + 1).padStart(2, '0');
-  
-  const bdayBoys = students.filter(s => s.dob === dateStr);
-
-  if (bdayBoys.length === 0) {
-    return res.status(200).json({ message: 'Aaj kisi ka bday nahi hai.' });
-  }
-
-  const names = bdayBoys.map(s => s.name).join(' aur ');
-  const payload = JSON.stringify({ 
-    title: 'Happy Birthday! 🎉', 
-    body: `Aaj ${names} ka birthday hai! Wish kar do fatak se.` 
   });
 
   try {
